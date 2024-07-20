@@ -41,6 +41,7 @@ const AuthProvider = ({ children }) => {
       credentials.password = '';
       credentials.name = '';
       credentials.email = '';
+      setLoading(false)
       swal({
         title: "Error !",
         text: `${error}`,
@@ -52,6 +53,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      setLoading(true)
       const response = await axios.post('https://hellomag.uz/v1/api/users/login', credentials);
       localStorage.setItem('token', response.data.token);
       setUser(response.data.user);
@@ -71,6 +73,7 @@ const AuthProvider = ({ children }) => {
       credentials.password = '';
       credentials.name = '';
       credentials.email = '';
+      setLoading(false)
       swal({
         title: "Error occurred",
         text: `${error.response.data.message}`,
