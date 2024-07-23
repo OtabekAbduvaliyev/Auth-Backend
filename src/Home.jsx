@@ -1,6 +1,45 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
+import { AuthContext } from './Integration With Backend/Auth'
+import instance from './Integration With Backend/Components/Intance';
 
 const Home = () => {
+  const [avatarId, setAvatarId] = useState('')
+  console.log(avatarId);
+  const [selectedImage, setSelectedImage] = useState('');
+  const [oldPassword,setOldPassword] = useState('')
+  const [newPassword,setNewPassword] = useState('')
+  const credentials = {oldPassword,newPassword}
+  const {changePassword} = useContext(AuthContext)
+  const {update} = useContext(AuthContext)
+  const  [name, setName] = useState('')
+  const  [surName, setSurName] = useState('')
+  const handleChangePassword = (e)=>{
+    e.preventDefault()
+    changePassword(credentials)
+  }
+  const updateCreditionals = {name,surName,selectedImage}
+
+  const handleImageChange = async (event) => {
+    const formData = new FormData
+    const file = event.target.files[0];
+    formData.append('file',file)
+    console.log(file);
+    if (file) {
+      setSelectedImage(formData);
+    }
+    const token = localStorage.getItem('token');
+    const response = await instance.post('/file/upload/folder_name',formData,{
+      headers:{
+        Authorization:token
+      }
+    })
+    setAvatarId(response.data[0]._id)
+    console.log(response);
+  };
+  const handleUpdate = (e)=>{
+    e.preventDefault()
+    update(updateCreditionals)
+  }
   return (
 <section class="text-gray-600 body-font">
   <div class="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
@@ -17,6 +56,18 @@ const Home = () => {
         <button class="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">Button</button>
       </div>
     </div>
+  </div>
+  <div className="div">
+    <input type="text" value={oldPassword}  onChange={(e)=>setOldPassword(e.target.value)} placeholder='password'/>
+    <input type="text" value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} placeholder='newpassowrd'/>
+    <button onClick={handleChangePassword}>change</button>
+  </div>
+  <div className="update mt-32">
+    <input type="text" value={name} placeholder='name' onChange={(e)=>setName(e.target.value)}/>
+    <input type="text" value={surName} placeholder='surname' onChange={(e)=>setSurName(e.target.value)}/>
+    <input type="file" placeholder='avatar' onChange={handleImageChange}/>
+    <button onClick={handleUpdate}>Update</button>
+    
   </div>
 </section>
     )

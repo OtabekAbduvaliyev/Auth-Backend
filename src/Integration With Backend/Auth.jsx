@@ -9,25 +9,25 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false)
-  const [userData, setUserData] = useState(null);
+  const [token,setToken] = useState(null)
+    const [userData, setUserData] = useState(null);
   const [currentUser, setCurrentUser] = useState('');
+  console.log(token);
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setCurrentUser(token);
     }
   }, []);
-  console.log(currentUser);
-  console.log(userData);
+
   const register = async (credentials) => {
     try {
       setLoading(true)
-      const response = await instance.post('/users/register', credentials);
+      const response = await instance.post('/auth/register', credentials);
       localStorage.setItem('token', response.data.token);
       setCurrentUser(response.data.token); // Set currentUser directly
+      setToken(response.data.token)
       credentials.password = '';
-      credentials.name = '';
-      credentials.email = '';
       navigate('/');
       swal({
         title: "Success !",
@@ -48,13 +48,14 @@ const AuthProvider = ({ children }) => {
       });
     }
   };
-
   const login = async (credentials) => {
     try {
       setLoading(true)
-      const response = await instance.post('/users/login', credentials);
+      const response = await instance.post('/auth/login', credentials);
       localStorage.setItem('token', response.data.token);
       setCurrentUser(response.data.token); // Set currentUser directly
+      setToken(response.data.token)
+      console.log(response);
       credentials.password = '';
       credentials.name = '';
       credentials.email = '';
@@ -65,12 +66,12 @@ const AuthProvider = ({ children }) => {
         icon: "success",
         button: "close",
       });
+      setLoading(false)
     } catch (error) {
       console.error('Login failed:', error);
       credentials.password = '';
       credentials.name = '';
       credentials.email = '';
-      setLoading(false)
       swal({
         title: "Error occurred",
         text: `${error.response.data.message}`,
@@ -78,9 +79,44 @@ const AuthProvider = ({ children }) => {
         button: "close",
       });
       handleError(error);
+      setLoading(false)
     }
   };
-
+  const changePassword = async (credentials) => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Sending token:', token); // Debug log
+      console.log(credentials);
+      const response = await instance.put('/auth/change-password', credentials, {
+        headers: {
+          Authorization: token
+        }
+      });
+      localStorage.setItem('token', response.data.token);
+      console.log(response.data.message);
+      console.log(response);
+    } catch (error) {
+      console.log('Error details:', error.response); // Debug log
+      handleError(error);
+    }
+  };
+  const update = async (credentials) => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Sending token:', token); // Debug log
+      console.log(credentials);
+      const response = await instance.put('/auth', credentials, {
+        headers: {
+          Authorization: token
+        }
+      });
+      console.log(response.data.message);
+      console.log(response);
+    } catch (error) {
+      console.log('Error details:', error.response); // Debug log
+      handleError(error);
+    }
+  };
   const logout = () => {
     localStorage.removeItem('token');
     setCurrentUser(''); // Clear currentUser
@@ -91,7 +127,6 @@ const AuthProvider = ({ children }) => {
       button: "close",
     });
   };
-
   const handleError = (error) => {
     if (error.response) {
       console.error('Server responded with status:', error.response.status);
@@ -102,20 +137,8 @@ const AuthProvider = ({ children }) => {
       console.error('Error setting up request:', error.message);
     }
   };
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setUserData(data);
-        } else {
-          console.error('Data is not an array');
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
   return (
-    <AuthContext.Provider value={{ currentUser, register, logout, login, userData, loading }}>
+    <AuthContext.Provider value={{ currentUser, register, logout, login, userData, loading,changePassword,update}}>
       {children}
     </AuthContext.Provider>
   );

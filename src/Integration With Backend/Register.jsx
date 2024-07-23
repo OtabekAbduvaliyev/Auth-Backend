@@ -3,7 +3,7 @@ import { AuthContext } from './Auth';
 import { Link } from 'react-router-dom';
 
 const Register = () => {
-  const [credentials, setCredentials] = useState({ email: '', password: '', name: '' });
+  const [credentials, setCredentials] = useState({password: '', username: '' });
   const { register } = useContext(AuthContext);
 
  const {loading} = useContext(AuthContext)
@@ -14,8 +14,7 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     register(credentials);
-    console.log(credentials.name);
-    console.log(credentials.email);
+    console.log(credentials.username);
     console.log(credentials.password);
   };
 
@@ -35,23 +34,23 @@ const Register = () => {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
                 User Name
               </label>
               <div className="mt-2">
                 <input
-                  id="name"
-                  name="name"
+                  id="username"
+                  name="username"
                   type="text"
                   required
                   autoComplete="none"
-                  value={credentials.name} 
+                  value={credentials.username} 
                   onChange={handleChange}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
@@ -67,7 +66,7 @@ const Register = () => {
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
-            </div>
+            </div> */}
 
             <div>
               <div className="flex items-center justify-between">
