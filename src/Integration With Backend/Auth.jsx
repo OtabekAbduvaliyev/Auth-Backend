@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
+import instance from './Components/Intance';
 
 const AuthContext = createContext();
 
@@ -21,7 +22,7 @@ const AuthProvider = ({ children }) => {
   const register = async (credentials) => {
     try {
       setLoading(true)
-      const response = await axios.post('https://hellomag.uz/v1/api/users/register', credentials);
+      const response = await instance.post('/users/register', credentials);
       localStorage.setItem('token', response.data.token);
       setCurrentUser(response.data.token); // Set currentUser directly
       credentials.password = '';
@@ -51,7 +52,7 @@ const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true)
-      const response = await axios.post('https://hellomag.uz/v1/api/users/login', credentials);
+      const response = await instance.post('/users/login', credentials);
       localStorage.setItem('token', response.data.token);
       setCurrentUser(response.data.token); // Set currentUser directly
       credentials.password = '';
