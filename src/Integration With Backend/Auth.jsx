@@ -92,7 +92,6 @@ const AuthProvider = ({ children }) => {
           Authorization: token
         }
       });
-      localStorage.setItem('token', response.data.token);
       console.log(response.data.message);
       console.log(response);
     } catch (error) {
