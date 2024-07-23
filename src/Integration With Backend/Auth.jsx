@@ -8,7 +8,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false)
-  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [currentUser, setCurrentUser] = useState('');
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -17,12 +17,12 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
   console.log(currentUser);
+  console.log(userData);
   const register = async (credentials) => {
     try {
       setLoading(true)
       const response = await axios.post('https://hellomag.uz/v1/api/users/register', credentials);
       localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
       setCurrentUser(response.data.token); // Set currentUser directly
       credentials.password = '';
       credentials.name = '';
@@ -38,13 +38,10 @@ const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Registration failed:', error);
       handleError(error);
-      credentials.password = '';
-      credentials.name = '';
-      credentials.email = '';
       setLoading(false)
       swal({
         title: "Error !",
-        text: `${error}`,
+        text: `${error.response.data.message}`,
         icon: "error",
         button: "ok",
       });
@@ -56,7 +53,6 @@ const AuthProvider = ({ children }) => {
       setLoading(true)
       const response = await axios.post('https://hellomag.uz/v1/api/users/login', credentials);
       localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
       setCurrentUser(response.data.token); // Set currentUser directly
       credentials.password = '';
       credentials.name = '';
@@ -86,7 +82,6 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    setUser(null);
     setCurrentUser(''); // Clear currentUser
     swal({
       title: "Logged Out",
@@ -106,9 +101,20 @@ const AuthProvider = ({ children }) => {
       console.error('Error setting up request:', error.message);
     }
   };
-
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUserData(data);
+        } else {
+          console.error('Data is not an array');
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
   return (
-    <AuthContext.Provider value={{ user, currentUser, register, logout, login, loading }}>
+    <AuthContext.Provider value={{ currentUser, register, logout, login, userData, loading }}>
       {children}
     </AuthContext.Provider>
   );

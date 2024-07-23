@@ -8,6 +8,8 @@ import Home from './Home';
 import LogIn from "./Integration With Backend/LogIn";
 import { AuthContext } from "./Integration With Backend/Auth";
 import {useContext,useEffect} from 'react'
+import Users from "./Integration With Backend/Components/Users";
+import CreateUser from "./Integration With Backend/Components/CreateUsers";
 
 function App() {
   const {logout} = useContext(AuthContext)
@@ -55,6 +57,16 @@ function App() {
                Home
                 </Link>
               </button>
+              <button class="inline-flex items-center bg-indigo-500 text-white  border-0 py-1 px-3 focus:outline-none hover:bg-indigo-600 rounded text-base mt-4 md:mt-0">
+                <Link to='/users'>
+               Users
+                </Link>
+              </button>
+              <button class="inline-flex items-center bg-indigo-500 text-white  border-0 py-1 px-3 focus:outline-none hover:bg-indigo-600 rounded text-base mt-4 md:mt-0">
+                <Link to='/createusers'>
+               Create Users
+                </Link>
+              </button>
               <button onClick={logout} class="inline-flex items-center bg-indigo-500 text-white  border-0 py-1 px-3 focus:outline-none hover:bg-indigo-600 rounded text-base mt-4 md:mt-0">
                Logout
               </button>
@@ -69,6 +81,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/" element={<RequiredAuth><Home /></RequiredAuth>} />
+          <Route path="/users" element={<RequiredAuth><Users /></RequiredAuth>} />
+          <Route path="/createusers" element={<RequiredAuth><CreateUser /></RequiredAuth>} />
         </Routes>
       </>
   )
